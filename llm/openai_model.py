@@ -6,6 +6,28 @@ from openai import OpenAI
 from .base import BaseLLM, Message
 
 
+def _serialize_message(message: Message) -> dict[str, Any]:
+    serialized: dict[str, Any] = {
+        "role": message.role,
+        "content": message.content,
+    }
+    if message.tool_calls:
+        serialized["tool_calls"] = [
+            {
+                "id": tool_call["id"],
+                "type": "function",
+                "function": {
+                    "name": tool_call["name"],
+                    "arguments": json.dumps(tool_call["arguments"], ensure_ascii=False),
+                },
+            }
+            for tool_call in message.tool_calls
+        ]
+    if message.tool_call_id:
+        serialized["tool_call_id"] = message.tool_call_id
+    return serialized
+
+
 class OpenAIModel(BaseLLM):
     """OpenAI API 模型实现。"""
 
@@ -21,7 +43,7 @@ class OpenAIModel(BaseLLM):
     ) -> Message:
         kwargs: dict[str, Any] = {
             "model": self.model,
-            "messages": [{"role": m.role, "content": m.content} for m in messages],
+            "messages": [_serialize_message(m) for m in messages],
             "temperature": temperature,
         }
         if tools:
@@ -53,7 +75,7 @@ class OpenAIModel(BaseLLM):
     ):
         kwargs: dict[str, Any] = {
             "model": self.model,
-            "messages": [{"role": m.role, "content": m.content} for m in messages],
+            "messages": [_serialize_message(m) for m in messages],
             "temperature": temperature,
             "stream": True,
         }

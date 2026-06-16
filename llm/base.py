@@ -1,20 +1,7 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
 from typing import Any
 
-
-@dataclass
-class Message:
-    role: str
-    content: str
-    tool_calls: list[dict[str, Any]] = field(default_factory=list)
-
-
-@dataclass
-class ToolCall:
-    id: str
-    name: str
-    arguments: dict[str, Any]
+from agent.types import Message
 
 
 class BaseLLM(ABC):

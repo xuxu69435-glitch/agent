@@ -6,7 +6,7 @@ class DeepSeekModel(OpenAIModel):
 
     DEFAULT_BASE_URL = "https://api.deepseek.com"
 
-    def __init__(self, model: str = "deepseek-chat", api_key: str | None = None, base_url: str | None = None):
+    def __init__(self, model: str = "deepseek-v4-pro", api_key: str | None = None, base_url: str | None = None):
         super().__init__(
             model=model,
             api_key=api_key,
